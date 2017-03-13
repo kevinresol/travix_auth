@@ -1,0 +1,21 @@
+{
+  "name": "travix_auth",
+  "license": "MIT",
+  "main": "travix.Auth",
+  "tags": [
+    "ci",
+    "travis",
+    "build",
+    "tool"
+  ],
+  "classPath": "src",
+  "contributors": [
+    "kevinresol"
+  ],
+  "releasenote": "initial release",
+  "version": "0.0.0",
+  "dependencies": {
+    "tink_cli": "",
+    "asys": ""
+  }
+}
