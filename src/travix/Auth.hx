@@ -58,17 +58,11 @@ class Auth {
 		
 		// https://github.com/HaxeFoundation/haxelib/blob/302160b/src/haxelib/SiteApi.hx#L34
 		if(cnx.api.checkPassword.call([username, password])) {
-			var travis = isWindows ? 'travis.bat' : 'travis';
-			switch which(travis) {
+			switch which(isWindows ? 'travis.bat' : 'travis') {
 				case Success(path):
-					// strange ruby behaviour on windows, when running the process from haxe:
-					// somehow the ruby expects the gem to be located at cwd
-					// so we switch to the folder containing the gem before running it
-					if(isWindows) Sys.setCwd(path.directory());
-					
 					var args = ['encrypt', 'HAXELIB_AUTH=$username:$password', '-r', repo];
 					if(add != null) args = args.concat(['--add', add]);
-					switch run(travis, args) {
+					switch run(path, args) {
 						case Success(v):
 							if(isWindows) Sys.setCwd(cwd);
 							Sys.println(add != null ? 'Added secure variable entry to $add in .travis.yml' : v);
