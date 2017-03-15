@@ -5,6 +5,7 @@ import tink.cli.Rest;
 import haxe.remoting.*;
 import haxe.crypto.*;
 import sys.io.*;
+import sys.*;
 
 using StringTools;
 using haxe.io.Path;
@@ -33,6 +34,8 @@ class Auth {
 	@:required
 	public var repo:String;
 	
+	public var add:String;
+	
 	static var isWindows = Sys.systemName() == 'Windows';
 	
 	public function new() {}
@@ -56,25 +59,26 @@ class Auth {
 		// https://github.com/HaxeFoundation/haxelib/blob/302160b/src/haxelib/SiteApi.hx#L34
 		if(cnx.api.checkPassword.call([username, password])) {
 			var travis = isWindows ? 'travis.bat' : 'travis';
-			var encrypted = 
-				switch which(travis) {
-					case Success(path):
-						// strange ruby behaviour on windows, when running the process from haxe:
-						// somehow the ruby expects the gem to be located at cwd
-						// so we switch to the folder containing the gem before running it
-						if(isWindows) Sys.setCwd(path.directory());
-						
-						switch run(travis, ['encrypt', 'HAXELIB_AUTH=$username:$password', '-r', repo]) {
-							case Success(v):
-								if(isWindows) Sys.setCwd(cwd);
-								v;
-							case Failure(e):
-								return Error.withData('Cannot encrypt variable', e.data); 
-						}
-					case Failure(_):
-						return new Error('travis not installed. Install instructions can be found here: <url>');
-				}
-			trace('  - secure: ' + encrypted);
+			switch which(travis) {
+				case Success(path):
+					// strange ruby behaviour on windows, when running the process from haxe:
+					// somehow the ruby expects the gem to be located at cwd
+					// so we switch to the folder containing the gem before running it
+					if(isWindows) Sys.setCwd(path.directory());
+					
+					var args = ['encrypt', 'HAXELIB_AUTH=$username:$password', '-r', repo];
+					if(add != null) args = args.concat(['--add', add]);
+					switch run(travis, args) {
+						case Success(v):
+							if(isWindows) Sys.setCwd(cwd);
+							Sys.println(add != null ? 'Added secure variable entry to $add in .travis.yml' : v);
+						case Failure(e):
+							return Error.withData('Cannot encrypt variable', e.data); 
+					}
+				case Failure(_):
+					return new Error('travis not installed. Install instructions can be found here: <url>');
+			}
+			
 		} else {
 			return new Error('Incorrect haxelib credentials');
 		}
