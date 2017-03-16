@@ -34,6 +34,9 @@ class Auth {
 	@:required
 	public var repo:String;
 	
+	/**
+	 *  Automatically add an entry to .travis.yml (Refer to travis doc). Will print out the encrypted string if omitted.
+	 */
 	public var add:String;
 	
 	static var isWindows = Sys.systemName() == 'Windows';
