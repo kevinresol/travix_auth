@@ -53,11 +53,10 @@ class Auth {
 	@:command
 	public function encrypt():Promise<Noise> {
 		var cwd = Sys.getCwd();
-		var password = Md5.encode(password);
 		var cnx = HttpConnection.urlConnect('http://lib.haxe.org/api/3.0/index.n');
 		
 		// https://github.com/HaxeFoundation/haxelib/blob/302160b/src/haxelib/SiteApi.hx#L34
-		if(cnx.api.checkPassword.call([username, password])) {
+		if(cnx.api.checkPassword.call([username, Md5.encode(password)])) {
 			switch which(isWindows ? 'travis.bat' : 'travis') {
 				case Success(path):
 					var args = ['encrypt', 'HAXELIB_AUTH=$username:$password', '-r', repo];
