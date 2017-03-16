@@ -1,21 +1,21 @@
 {
-  "name": "travix_auth",
-  "license": "MIT",
-  "main": "travix.Auth",
-  "tags": [
-    "ci",
-    "travis",
-    "build",
-    "tool"
-  ],
-  "classPath": "src",
-  "contributors": [
-    "kevinresol",
-    "back2dos"
-  ],
-  "releasenote": "initial release",
-  "version": "0.0.0",
-  "dependencies": {
-    "tink_cli": ""
-  }
+	"main": "travix.Auth",
+	"name": "travix_auth",
+	"license": "MIT",
+	"tags": [
+		"ci",
+		"travis",
+		"build",
+		"tool"
+	],
+	"classPath": "src",
+	"contributors": [
+		"kevinresol",
+		"back2dos"
+	],
+	"releasenote": "Initial release",
+	"version": "0.1.0",
+	"dependencies": {
+		"tink_cli": ""
+	}
 }
