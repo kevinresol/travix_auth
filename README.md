@@ -4,6 +4,13 @@ Little utility to add haxelib credentials as an ecrypted entry in .travis.yml's 
 
 It is supposed to be used with some automated haxelib submission mechanisms, such as `travix_release`
 
+
+### Prerequisites
+
+This cli requires the travis gem to work.
+
+Install ruby and then run: `gem install travis`
+
 ### Usage
 
 ```
