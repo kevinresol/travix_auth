@@ -13,8 +13,8 @@
 		"kevinresol",
 		"back2dos"
 	],
-	"releasenote": "Initial release",
-	"version": "0.1.0",
+	"releasenote": "Add env entry by default, guess repo from remote url",
+	"version": "0.2.0",
 	"dependencies": {
 		"tink_cli": ""
 	}
