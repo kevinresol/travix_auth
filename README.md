@@ -25,6 +25,6 @@ options:
     Haxelib password
   --repo, -r: (required)
     Github repo in the form of <owner>/<repo>. Example: back2dos/travix
-  --add, -a:
-    Automatically add an entry to .travis.yml (Refer to travis doc). Will print out the encrypted string if omitted.
+  --noadd, -n:
+    Don't add an entry to .travis.yml
 ```

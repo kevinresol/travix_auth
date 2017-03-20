@@ -35,9 +35,9 @@ class Auth {
 	public var repo:String;
 	
 	/**
-	 *  Automatically add an entry to .travis.yml (Refer to travis doc). Will print out the encrypted string if omitted.
+	 *  Don't add an entry to .travis.yml
 	 */
-	public var add:String;
+	public var noadd:Bool;
 	
 	static var isWindows = Sys.systemName() == 'Windows';
 	
@@ -55,7 +55,6 @@ class Auth {
 	 */
 	@:command
 	public function encrypt():Promise<Noise> {
-		var cwd = Sys.getCwd();
 		var cnx = HttpConnection.urlConnect('http://lib.haxe.org/api/3.0/index.n');
 		
 		// https://github.com/HaxeFoundation/haxelib/blob/302160b/src/haxelib/SiteApi.hx#L34
@@ -63,16 +62,35 @@ class Auth {
 			switch which(isWindows ? 'travis.bat' : 'travis') {
 				case Success(path):
 					var args = ['encrypt', 'HAXELIB_AUTH=$username:$password', '-r', repo];
-					if(add != null) args = args.concat(['--add', add]);
 					switch run(path, args) {
-						case Success(v):
-							if(isWindows) Sys.setCwd(cwd);
-							Sys.println(add != null ? 'Added secure variable entry to $add in .travis.yml' : v);
+						case Success(hash):
+							if(noadd) Sys.println(hash);
+							else {
+								// add an entry in a not-so-robust way
+								var yml = File.getContent('.travis.yml');
+								var env = ~/^env:/;
+								var secure = ~/secure:\s*.*/;
+								var lines = yml.split('\n');
+								var added = false;
+								for(i in 0...lines.length) {
+									if(env.match(lines[i])) {
+										if(secure.match(lines[i + 1]))
+											lines[i + 1] = secure.replace(lines[i + 1], 'secure: $hash');
+										else
+											lines.insert(i + 1, '  - secure: $hash');
+										added = true;
+										break;
+									}
+								}
+								if(!added) lines.push('env:\n  - secure: $hash');
+								File.saveContent('.travis.yml', lines.join('\n'));
+								Sys.println('Added secure variable entry to .travis.yml');
+							}
 						case Failure(e):
 							return Error.withData('Cannot encrypt variable', e.data); 
 					}
 				case Failure(_):
-					return new Error('travis not installed. Install instructions can be found here: <url>');
+					return new Error('travis not installed. Install Ruby and then run `gem install travis`');
 			}
 			
 		} else {
